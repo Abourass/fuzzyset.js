@@ -3,3 +3,10 @@
 node_modules
 build
 *.node
+.git
+.vscode
+src
+.gitignore
+LICENSE.md
+licensezero.json
+package-lock.json
