@@ -1,4 +1,4 @@
-const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
+export const FuzzySet = function (arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
     var fuzzyset = {
 
     };
@@ -15,28 +15,28 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
     fuzzyset.items = {};
 
     // helper functions
-    var levenshtein = function(str1, str2) {
+    var levenshtein = function (str1, str2) {
         var current = [], prev, value;
 
         for (var i = 0; i <= str2.length; i++)
             for (var j = 0; j <= str1.length; j++) {
-            if (i && j)
-                if (str1.charAt(j - 1) === str2.charAt(i - 1))
-                value = prev;
+                if (i && j)
+                    if (str1.charAt(j - 1) === str2.charAt(i - 1))
+                        value = prev;
+                    else
+                        value = Math.min(current[j], current[j - 1], prev) + 1;
                 else
-                value = Math.min(current[j], current[j - 1], prev) + 1;
-            else
-                value = i + j;
+                    value = i + j;
 
-            prev = current[j];
-            current[j] = value;
+                prev = current[j];
+                current[j] = value;
             }
 
         return current.pop();
     };
 
     // return an edit distance from 0 to 1
-    var _distance = function(str1, str2) {
+    var _distance = function (str1, str2) {
         if (str1 === null && str2 === null) throw 'Trying to compare two null values';
         if (str1 === null || str2 === null) return 0;
         str1 = String(str1); str2 = String(str2);
@@ -55,7 +55,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
     // TODO: figure out way to do this for more languages
     var _nonWordRe = /[^a-zA-Z0-9\u00C0-\u00FF\u0621-\u064A\u0660-\u0669, ]+/g;
 
-    var _iterateGrams = function(value, gramSize) {
+    var _iterateGrams = function (value, gramSize) {
         gramSize = gramSize || 2;
         var simplified = '-' + value.toLowerCase().replace(_nonWordRe, '') + '-',
             lenDiff = gramSize - simplified.length,
@@ -71,7 +71,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
         return results;
     };
 
-    var _gramCounter = function(value, gramSize) {
+    var _gramCounter = function (value, gramSize) {
         // return an object where key=gram, value=number of occurrences
         gramSize = gramSize || 2;
         var result = {},
@@ -88,7 +88,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
     };
 
     // the main functions
-    fuzzyset.get = function(value, defaultValue, minMatchScore) {
+    fuzzyset.get = function (value, defaultValue, minMatchScore) {
         // check for value in set, returning defaultValue or null if none found
         if (minMatchScore === undefined) {
             minMatchScore = .33
@@ -100,7 +100,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
         return result;
     };
 
-    fuzzyset._get = function(value, minMatchScore) {
+    fuzzyset._get = function (value, minMatchScore) {
         var results = [];
         // start with high gram size and if there are no results, go to lower gram sizes
         for (var gramSize = this.gramSizeUpper; gramSize >= this.gramSizeLower; --gramSize) {
@@ -112,7 +112,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
         return null;
     };
 
-    fuzzyset.__get = function(value, gramSize, minMatchScore) {
+    fuzzyset.__get = function (value, gramSize, minMatchScore) {
         var normalizedValue = this._normalizeStr(value),
             matches = {},
             gramCounts = _gramCounter(normalizedValue, gramSize),
@@ -141,8 +141,8 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
         }
 
         function isEmptyObject(obj) {
-            for(var prop in obj) {
-                if(obj.hasOwnProperty(prop))
+            for (var prop in obj) {
+                if (obj.hasOwnProperty(prop))
                     return false;
             }
             return true;
@@ -160,7 +160,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
             matchScore = matches[matchIndex];
             results.push([matchScore / (vectorNormal * items[matchIndex][0]), items[matchIndex][1]]);
         }
-        var sortDescending = function(a, b) {
+        var sortDescending = function (a, b) {
             if (a[0] < b[0]) {
                 return 1;
             } else if (a[0] > b[0]) {
@@ -181,7 +181,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
             results.sort(sortDescending);
         }
         newResults = [];
-        results.forEach(function(scoreWordPair) {
+        results.forEach(function (scoreWordPair) {
             if (scoreWordPair[0] >= minMatchScore) {
                 newResults.push([scoreWordPair[0], this.exactSet[scoreWordPair[1]]]);
             }
@@ -189,7 +189,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
         return newResults;
     };
 
-    fuzzyset.add = function(value) {
+    fuzzyset.add = function (value) {
         var normalizedValue = this._normalizeStr(value);
         if (normalizedValue in this.exactSet) {
             return false;
@@ -201,7 +201,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
         }
     };
 
-    fuzzyset._add = function(value, gramSize) {
+    fuzzyset._add = function (value, gramSize) {
         var normalizedValue = this._normalizeStr(value),
             items = this.items[gramSize] || [],
             index = items.length;
@@ -225,13 +225,13 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
         this.exactSet[normalizedValue] = value;
     };
 
-    fuzzyset._normalizeStr = function(str) {
+    fuzzyset._normalizeStr = function (str) {
         if (Object.prototype.toString.call(str) !== '[object String]') throw 'Must use a string as argument to FuzzySet functions';
         return str.toLowerCase();
     };
 
     // return length of items in set
-    fuzzyset.length = function() {
+    fuzzyset.length = function () {
         var count = 0,
             prop;
         for (prop in this.exactSet) {
@@ -243,7 +243,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
     };
 
     // return is set is empty
-    fuzzyset.isEmpty = function() {
+    fuzzyset.isEmpty = function () {
         for (var prop in this.exactSet) {
             if (this.exactSet.hasOwnProperty(prop)) {
                 return false;
@@ -253,7 +253,7 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
     };
 
     // return list of values loaded into set
-    fuzzyset.values = function() {
+    fuzzyset.values = function () {
         var values = [],
             prop;
         for (prop in this.exactSet) {
@@ -276,8 +276,4 @@ const FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
     }
 
     return fuzzyset;
-};
-
-export {
-  FuzzySet as default,
 };
