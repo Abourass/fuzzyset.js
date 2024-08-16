@@ -1,6 +1,7 @@
 {
   "extends": "@assetval/confs",
-    "compilerOptions": {
+  "compilerOptions": {
+  "composite": false,
     "declaration": true,
     "experimentalDecorators": true,
     "target": "ES2022"
