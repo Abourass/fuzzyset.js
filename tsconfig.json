@@ -1,0 +1,11 @@
+{
+  "extends": "@assetval/confs",
+    "compilerOptions": {
+    "declaration": true,
+    "experimentalDecorators": true,
+    "target": "ES2022"
+  },
+  "include": [
+    "./src/fuzzyset.ts"
+  ]
+}
