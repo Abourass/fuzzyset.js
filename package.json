@@ -1,7 +1,7 @@
 {
   "name": "@assetval/fuzzyset",
   "description": "A fast fuzzy string set for JavaScript",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "sideEffects": false,
   "type": "module",
   "homepage": "http://Glench.github.com/fuzzyset.js",
